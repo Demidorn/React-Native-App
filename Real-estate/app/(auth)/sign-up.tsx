@@ -18,6 +18,10 @@ export default function SignUp() {
 
   const isLoading = fetchStatus === 'fetching';
 
+  if (signUp.status === 'complete' || isSignedIn) {
+    return null;
+  }
+
   const onSignUpPress = async () => {
     const { error } = await signUp.password({
       emailAddress: email,
@@ -33,13 +37,66 @@ export default function SignUp() {
     }
 
     if (!error) await signUp.verifications.sendEmailCode();
-    
   };
 
-  if (
-    signUp.status === 'missing_requirements' &&
-    signUp.unVerifiedFields.includes("emai")
-  )
+  const onVerifyPress = async () => {
+    await signUp.verifications.verifyEmailCode({
+      code
+    });
+    if (signUp.status === 'complete') {
+      await signUp.finalize({
+        navigate: ({ decorateUrl }) => {
+          const url = decorateUrl('/');
+          router.replace(url as any);
+        },
+      });
+    }
+  };
+
+  if (signUp.status === 'missing_requirements' && signUp.unverifiedFields.includes('email_address') && signUp.missingFields.length === 0) {
+    return (
+     <View className='flex-1 justify-center px-6 py-12'>
+        <Image source={require('../../assets/images/karibuhomes.png')}
+          className='w-52 h-40 mb-6'
+          resizeMode='contain'
+        />
+        <Text className='text-3xl font-bold text-gray-800 mb-2'>
+          Verify your account{""}</Text>
+        <Text className='text-gray-500 mb-8'> We sent a code tp {email}</Text>
+
+          <TextInput
+            className='w-full  border border-gray-300 rounded-xl py-3 px-4 mb-4'
+            placeholder='Enter verification code'
+            placeholderTextColor='#9CA3AF'
+            value={code}
+            onChangeText={setCode}
+          />
+          {errors.fields.code && (
+            <Text className='text-red-500 mb-4'>{errors.fields.code.message}</Text>
+          )}
+
+          <TouchableOpacity
+          onPress={onVerifyPress}
+          disabled={isLoading}
+          className='w-full bg-blue-500 py-4 rounded-xl items-center mb-4'
+        >
+          {isLoading ? (
+            <ActivityIndicator color='white' />
+          ) : (
+              <Text className='text-white font-bold text-base'> Verify </Text>
+          )}
+        </TouchableOpacity>
+
+         <TouchableOpacity
+          onPress={() => signUp.verifications.sendEmailCode()}
+          className='py-2'
+        >
+          <Text className='text-blue-600'> I need a new Code</Text>
+          
+        </TouchableOpacity>
+      </View>
+    );
+  }
  
   
   return (
