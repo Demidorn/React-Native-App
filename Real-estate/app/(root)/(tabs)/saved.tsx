@@ -5,10 +5,9 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 export default function Saved() {
   return (
      <SafeAreaView>
-      <View>
-        <Text>saved</Text>
-      </View>
-
+        <View>
+          <Text>saved</Text>
+        </View>
      </SafeAreaView>
   )
 }
