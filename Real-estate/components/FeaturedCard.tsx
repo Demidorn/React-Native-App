@@ -1,27 +1,31 @@
-import { View, Text, TouchableOpacity , Image} from 'react-native'
+import { View, Text, TouchableOpacity, Image } from 'react-native'
 import React from 'react'
 import { Property } from '@/types'
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import {formatPrice } from '@/lib/utils'
+import { formatPrice } from '@/lib/utils'
 
 export default function FeaturedCard({ property }: { property: Property }) {
   const router = useRouter();
   return (
     <TouchableOpacity
       className='w-72 mr-2 rounded-3xl overflow-hidden bg-white'
-       style={{
-                shadowColor: '#000',
-                shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: 0.08,
-                shadowRadius: 12,
-                elevation: 4,
-                opacity: property.is_sold ? 0.5 : 1
-       }}
+      style={{
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.08,
+        shadowRadius: 12,
+        elevation: 4,
+        opacity: property.is_sold ? 0.5 : 1
+      }}
       onPress={() => router.push(`/(root)/propert/${property.id}`)}
     >
       <Image
-        source={{ uri: property.images[0] }}
+        source={
+          property.images.length > 0
+            ? { uri: property.images[0] }
+            : require('@/assets/images/karibuhomes.png')
+        }
         className='w-full h-44'
         resizeMode='cover'
       />
@@ -30,9 +34,9 @@ export default function FeaturedCard({ property }: { property: Property }) {
       </View>
       {/* sold property */}
       {property.is_sold && (
-         <View className='absolute top-3 right-3 bg-red-500 px-3 py-1 rounded-full'>
-        <Text className='text-xs font-semibold  text-white  capitalize'>sold</Text>
-      </View>
+        <View className='absolute top-3 right-3 bg-red-500 px-3 py-1 rounded-full'>
+          <Text className='text-xs font-semibold  text-white  capitalize'>sold</Text>
+        </View>
       )}
 
       <View className='p-4'>
@@ -49,13 +53,13 @@ export default function FeaturedCard({ property }: { property: Property }) {
           <Text className='text-blue-600 font-bold text-base'>{formatPrice(property.price)}</Text>
           <View className='flex-row items-center gap-3'>
             <View className='flex-row items-center gap-1'>
-              <Ionicons name='bed-outline' size={13} color='#6B7280'/>
-              <Text className='text-xs text-gray-500'>{ property.bedrooms}</Text>
+              <Ionicons name='bed-outline' size={13} color='#6B7280' />
+              <Text className='text-xs text-gray-500'>{property.bedrooms}</Text>
             </View>
 
             <View className='flex-row items-center gap-1'>
-              <Ionicons name='water-outline' size={13} color='#6B7280'/>
-              <Text className='text-xs text-gray-500'>{ property.bathrooms}</Text>
+              <Ionicons name='water-outline' size={13} color='#6B7280' />
+              <Text className='text-xs text-gray-500'>{property.bathrooms}</Text>
             </View>
           </View>
         </View>
