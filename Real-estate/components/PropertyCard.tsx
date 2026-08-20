@@ -27,7 +27,11 @@ export default function PropertyCard({ property, onUnsave, showSave = false }: {
       onPress={() => router.push(`/(root)/propert/${property.id}`)}
     >
       <Image
-        source={{ uri: property.images[0] }}
+        source={
+          property.images.length > 0
+            ? { uri: property.images[0] }
+            : require('@/assets/images/karibuhomes.png')
+        }
         className='w-28 h-28'
         resizeMode='cover'
       />
@@ -56,7 +60,7 @@ export default function PropertyCard({ property, onUnsave, showSave = false }: {
             </View>
           )}
 
-          <View className='flex-row gap-4 mr-4'>
+          <View className='flex-row gap-4'>
             <View className='flex-row items-center gap-1'>
               <Ionicons name='bed-outline' size={11} color='#6B7280'/>
               <Text className='text-xs text-gray-500'>{ property.bedrooms} bd</Text>
