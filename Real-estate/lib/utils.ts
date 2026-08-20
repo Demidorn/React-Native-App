@@ -1,4 +1,4 @@
-export const formartPrice = (value: number): string => {
+export const formatPrice = (value: number): string => {
   if (value >= 10000000000) {
     const b = (value / 10000000000).toFixed(1).replace(/\.0$/, '');
     return `ugx${b}B`;
