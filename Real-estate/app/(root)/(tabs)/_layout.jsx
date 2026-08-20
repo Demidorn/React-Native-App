@@ -1,48 +1,59 @@
-// import { NativeTabs, Icon, Label } from 'expo-router/unstable-native-tabs';
-
-// export default function TabLayout() {
-//   return (
-//     <NativeTabs
-//       tintColor="#2563EB"
-//       iconColor={{
-//         default: "#6B7280",
-//         selected: "#2563EB",
-//       }}
-//       labelVisibilityMode="labeled"
-//       labelStyle={{
-//         color: "#6B7280",
-//       }}
-//     >
-//       <NativeTabs.Trigger name="index">
-//         <Icon sf="house.fill" md="house.fill" />
-//         <Label>Home</Label>
-//       </NativeTabs.Trigger>
-
-//       <NativeTabs.Trigger name="search">
-//         <Icon sf="magnifyingglass" md="search" />
-//         <Label>Search</Label>
-//       </NativeTabs.Trigger>
-
-//       {/* create property */}
-
-//       <NativeTabs.Trigger name="saved">
-//         <Icon sf="heart.fill" md="favorite" />
-//         <Label>Saved</Label>
-//       </NativeTabs.Trigger>
-
-//       <NativeTabs.Trigger name="profile">
-//         <Icon sf="person.circle" md="account_circle" />
-//         <Label>Profile</Label>
-//       </NativeTabs.Trigger>
-//     </NativeTabs>
-//   );
-// }
-
+import { NativeTabs, Icon, Label } from 'expo-router/unstable-native-tabs';
 import { Tabs } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import { useUserStore } from '@/store/useStore';
+import { useUserStore } from "@/store/useStore";
+import { Platform } from 'react-native';
 
-export default function TabLayout() {
+function IOSTabs() {
+
+  const isAdmin = useUserStore((state) => state.isAdmin);
+
+  return (
+    <NativeTabs
+      tintColor="#2563EB"
+      iconColor={{
+        default: "#6B7280",
+        selected: "#2563EB",
+      }}
+      labelVisibilityMode="labeled"
+      labelStyle={{
+        color: "#6B7280",
+      }}
+    >
+      <NativeTabs.Trigger name="index">
+        <Icon sf="house.fill" />
+        <Label>Home</Label>
+      </NativeTabs.Trigger>
+
+      <NativeTabs.Trigger name="search">
+        <Icon sf="magnifyingglass" />
+        <Label>Search</Label>
+      </NativeTabs.Trigger>
+
+      {/* create property */}
+      {isAdmin && (
+        <NativeTabs.Trigger name="create">
+        <Icon sf="add.fill"  />
+        <Label>Saved</Label>
+      </NativeTabs.Trigger>
+      )}
+
+      <NativeTabs.Trigger name="saved">
+        <Icon sf="heart.fill"  />
+        <Label>Saved</Label>
+      </NativeTabs.Trigger>
+
+      <NativeTabs.Trigger name="profile">
+        <Icon sf="person.circle"  />
+        <Label>Profile</Label>
+      </NativeTabs.Trigger>
+    </NativeTabs>
+  );
+}
+
+
+
+function AndroidTabs() {
   const isAdmin = useUserStore((state) => state.isAdmin);
 
   return (
@@ -82,21 +93,37 @@ export default function TabLayout() {
       />
 
       {/* create property */}
-      {isAdmin && (
-        <Tabs.Screen
-          name="create"
-          options={{
-            title: "create",
-            tabBarIcon: ({ color, size, focused }) => (
-              <Ionicons
-                name={focused ? "add-circle" : "add-circle-outline"}
-                size={size}
-                color={color}
-              />
-            ),
-          }}
-        />
-      )}
+
+      <Tabs.Screen
+        name="create"
+        options={{
+          title: "create",
+          href: isAdmin ? undefined : null,
+          tabBarIcon: ({ color, size, focused }) => (
+            <Ionicons
+              name={focused ? "add-circle" : "add-circle-outline"}
+              size={size}
+              color={color}
+            />
+          ),
+        }}
+      />
+      {/* second  option for only admins to create property */}
+      {/* {isAdmin && (
+      <Tabs.Screen
+        name="create"
+        options={{
+          title: "create",
+          tabBarIcon: ({ color, size, focused }) => (
+            <Ionicons
+              name={focused ? "add-circle" : "add-circle-outline"}
+              size={size}
+              color={color}
+            />
+          ),
+        }}
+      />
+      )}  */}
 
       <Tabs.Screen
         name="saved"
@@ -127,4 +154,9 @@ export default function TabLayout() {
       />
     </Tabs>
   );
+}
+
+
+export default function TabsLayout() {
+  return Platform.OS === 'ios' ? <IOSTabs /> : <AndroidTabs />;
 }
