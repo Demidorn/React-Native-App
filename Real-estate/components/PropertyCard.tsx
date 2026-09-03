@@ -4,6 +4,7 @@ import { Property } from '@/types'
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { formatPrice } from '@/lib/utils';
+import { useSavedProperty } from '@/hooks/useSavedProperty';
 
 export default function PropertyCard({ property, onUnsave, showSave = false }: {
   property: Property;
@@ -12,7 +13,8 @@ export default function PropertyCard({ property, onUnsave, showSave = false }: {
 }) {
 
   const router = useRouter();
-  const isSaved = true;
+ 
+  const {isSaved, saveLoading, toggleSave} = useSavedProperty(property.id, onUnsave);
   return (
     <TouchableOpacity
       className='flex-row rounded-2xl mb-4 overflow-hidden bg-white  '
@@ -24,7 +26,8 @@ export default function PropertyCard({ property, onUnsave, showSave = false }: {
         elevation: 4,
         opacity: property.is_sold ? 0.5 : 1
       }}
-      onPress={() => router.push(`/(root)/propert/${property.id}`)}
+      // onPress={() => router.push(`/(root)/property/${property.id}` as unknown as string)}
+      onPress={() => router.push({ pathname: '/(root)/property/[id]', params: { id: String(property.id) } } as any)}
     >
       <Image
         source={
@@ -74,14 +77,17 @@ export default function PropertyCard({ property, onUnsave, showSave = false }: {
         </View>
       </View>
 
-      <TouchableOpacity className='w-10 items-center pt-3'>
+      <TouchableOpacity
+        onPress={toggleSave}
+        disabled={saveLoading}
+        className='w-10 items-center pt-3'
+      >
         <Ionicons
           name={isSaved ? 'heart' : 'heart-outline'}
           size={18}
           color={isSaved ? '#EF4444' : '#9CA3AF'}
         />
       </TouchableOpacity>
-
     </TouchableOpacity>
   )
 }
