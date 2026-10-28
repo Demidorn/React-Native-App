@@ -57,6 +57,7 @@ export default function PropertyCard({ property, onUnsave, showSave = false }: {
         </View>
         <View className='flex-row items-center justify-between'>
           <Text className='text-blue-600 font-bold text-sm'>{formatPrice(property.price)}</Text>
+          
           {property.is_sold && (
             <View className='bg-red-50 px-2 py-0.5 rounded-full'>
               <Text className='text-red-500 text-xs font-semibold'>Sold</Text>
