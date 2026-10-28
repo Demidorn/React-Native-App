@@ -119,7 +119,7 @@ export default function Search() {
             )}
           </TouchableOpacity>
         </View>
-        {/* Filter chips - modals */}
+        {/* Filter chips */}
         {/* {activeFilterCount > 0 && (
           <View className='flew-raw flex-wrap gap-2 mt-3'>
             {type && (
@@ -137,18 +137,18 @@ export default function Search() {
 
         {activeFilterCount > 0 && (
           <View className='flex-row flex-wrap gap-2 mt-3'>
-            {type && <FilterChip label={type} onRemove={() => setType(null)} />}
+            {type && <FilterChip type={type} onRemove={() => setType(null)} />}
 
             {bedrooms !== null && (
               <FilterChip
-                label={bedrooms === 4 ? '4+ beds' : `${bedrooms} bed${bedrooms > 1 ? 's' : ''}`}
+                type={bedrooms === 4 ? '4+ beds' : `${bedrooms} bed${bedrooms > 1 ? 's' : ''}`}
                 onRemove={() => setBedrooms(null)}
               />
             )}
             {/* combined chip, tapping remove should clear both minPrice and maxPrice together: */}
             {(minPrice !== null && maxPrice !== null) ? (
               <FilterChip
-                label={`$${formatPrice(minPrice)} - $${formatPrice(maxPrice)}`}
+                type={`$${formatPrice(minPrice)} - $${formatPrice(maxPrice)}`}
                 onRemove={() => {
                   setMinPrice(null);
                   setMaxPrice(null);
@@ -157,10 +157,10 @@ export default function Search() {
             ) : (
               <>
                 {minPrice !== null && (
-                  <FilterChip label={`From $${formatPrice(minPrice)}`} onRemove={() => setMinPrice(null)} />
+                  <FilterChip type={`From $${formatPrice(minPrice)}`} onRemove={() => setMinPrice(null)} />
                 )}
                 {maxPrice !== null && (
-                  <FilterChip label={`Up to $${formatPrice(maxPrice)}`} onRemove={() => setMaxPrice(null)} />
+                  <FilterChip type={`Up to $${formatPrice(maxPrice)}`} onRemove={() => setMaxPrice(null)} />
                 )}
               </>
             )}
@@ -208,16 +208,11 @@ export default function Search() {
         }
       />
 
-
-
       {/* filter modal */}
       <FilterModal
         visible={showFilters}
         onClose={() => setShowFilters(false)}
       />
-
-
-
     </SafeAreaView>
   )
 }
