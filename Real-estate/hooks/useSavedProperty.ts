@@ -1,6 +1,6 @@
 import { useAuth } from "@clerk/expo";
 import { useSupabase } from "./useSupabase";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 export function useSavedProperty(propertyId: string, onUnsave?: () => void) {
   const { userId } = useAuth();
@@ -9,7 +9,7 @@ export function useSavedProperty(propertyId: string, onUnsave?: () => void) {
   const [isSaved, setIsSaved] = useState(false);
   const [saveLoading, setSaveLoading] = useState(false);
 
-  const checkIfSaved = async () => {
+  const checkIfSaved = useCallback(async () => {
     if (!userId) return;
 
     const { data, error } = await authSupabase
@@ -17,7 +17,8 @@ export function useSavedProperty(propertyId: string, onUnsave?: () => void) {
       .select("id")
       .eq("user_clerk_id", userId)
       .eq("property_id", propertyId)
-      .single();
+      // No matching row simply means this property has not been saved yet.
+      .maybeSingle();
 
     if (error) {
       console.error("Error checking saved property:", error);
@@ -25,32 +26,41 @@ export function useSavedProperty(propertyId: string, onUnsave?: () => void) {
     }
 
     setIsSaved(!!data);
-  };
+  }, [authSupabase, propertyId, userId]);
 
   useEffect(() => {
     checkIfSaved();
-  }, [userId, propertyId]);
+  }, [checkIfSaved]);
 
   const toggleSave = async () => {
     if (!userId || saveLoading) return;
     setSaveLoading(true);
 
-    if (isSaved) {
-      await authSupabase
-        .from("saved_properties")
-        .delete()
-        .eq("user_clerk_id", userId)
-        .eq("property_id", propertyId);
-      setIsSaved(false);
-      onUnsave?.();
-    } else {
-      await authSupabase.from('saved_properties').insert({
-        user_clerk_id: userId,
-        property_id: propertyId,
-      });
-      setIsSaved(true);
-    };
-    setSaveLoading(false);
+    try {
+      if (isSaved) {
+        const { error } = await authSupabase
+          .from("saved_properties")
+          .delete()
+          .eq("user_clerk_id", userId)
+          .eq("property_id", propertyId);
+
+        if (error) throw error;
+        setIsSaved(false);
+        onUnsave?.();
+      } else {
+        const { error } = await authSupabase.from('saved_properties').insert({
+          user_clerk_id: userId,
+          property_id: propertyId,
+        });
+
+        if (error) throw error;
+        setIsSaved(true);
+      }
+    } catch (error) {
+      console.error("Error updating saved property:", error);
+    } finally {
+      setSaveLoading(false);
+    }
   };
   return { isSaved, toggleSave, saveLoading };
 }
