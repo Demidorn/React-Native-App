@@ -16,37 +16,53 @@ export default function HomeScreen() {
   const [featured, setFeatured] = useState<Property[]>([]);
   const [recommended, setRecommended] = useState<Property[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   // console.log(featured, recommended)
 
   const fetchProperties = async () => {
     setLoading(true);
+    setErrorMessage(null);
     try {
-  
-      const { data: featuredData, error: featuredError } = await supabase
-        .from('properties')
-        .select('*')
-        .eq('is_featured', true)
-        .order('created_at', { ascending: false });
-      
+      const [featuredResponse, recommendedResponse] = await Promise.all([
+        supabase
+          .from('properties')
+          .select('*')
+          .eq('is_featured', true)
+          .order('created_at', { ascending: false }),
+        supabase
+          .from('properties')
+          .select('*')
+          .eq('is_featured', false)
+          .order('created_at', { ascending: false }),
+      ]);
+
+      const { data: featuredData, error: featuredError } = featuredResponse;
       if (featuredError) throw featuredError;
-      
-      const { data: recommendedData, error: recommendedError} = await supabase
-        .from('properties')
-        .select('*')
-        .eq('is_featured', true)
-        .order('created_at', { ascending: false });
-      
+
+      const { data: recommendedData, error: recommendedError } = recommendedResponse;
       if (recommendedError) throw recommendedError;
-      
+
       setFeatured(featuredData ?? []);
       setRecommended(recommendedData ?? []);
-
     } catch (error) {
-      console.error('Error fetching properties:', error);
-      // optionally surface this to the UI, e.g.:
-      // setError(error instanceof Error ? error.message : 'Failed to load properties');
+      const supabaseError = error as {
+        code?: string;
+        message?: string;
+        details?: string;
+        hint?: string;
+      };
+      const message = supabaseError.message ?? 'Failed to load properties.';
 
+      console.error('Error fetching properties:', {
+        code: supabaseError.code,
+        message,
+        details: supabaseError.details,
+        hint: supabaseError.hint,
+      });
+      setErrorMessage(message);
+      setFeatured([]);
+      setRecommended([]);
     } finally {
       setLoading(false);
     }
@@ -67,6 +83,11 @@ export default function HomeScreen() {
         showsVerticalScrollIndicator={false}
         ListHeaderComponent={
           <View>
+            {errorMessage && (
+              <View className='mx-5 mb-4 rounded-xl bg-red-50 px-4 py-3'>
+                <Text className='text-sm text-red-700'>{errorMessage}</Text>
+              </View>
+            )}
             {/* Header*/}
             <View className='flex-row items-center justify-between px-5 pt-t pb-5'>
               <Image
