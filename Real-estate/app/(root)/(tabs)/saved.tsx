@@ -46,7 +46,7 @@ export default function Saved() {
       // setSaved(data as unknown as SavedProperty[]);
     }
     setLoading(false);
-  }, [userId]);
+  }, [userId, authSupabase]);
 
   useFocusEffect(
     useCallback(() => {
