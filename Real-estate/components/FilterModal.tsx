@@ -66,8 +66,6 @@ export default function FilterModal({ visible, onClose }: { visible: boolean; on
     onClose();
   };
 
-
-
   return (
     <Modal
       visible={visible}
@@ -133,7 +131,7 @@ export default function FilterModal({ visible, onClose }: { visible: boolean; on
                 label: 'Max Price',
                 value: localMax,
                 onChange: setLocalMax,
-                placeholder: '0',
+                placeholder: 'any',
               }
             ].map(({ label, value, onChange, placeholder }) => (
               <View key={label} className='flex-1'>
@@ -196,10 +194,7 @@ export default function FilterModal({ visible, onClose }: { visible: boolean; on
             </Text>
           </TouchableOpacity>
         </View>
-
-
       </View>
-
     </Modal>
   )
 }
