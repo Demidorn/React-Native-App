@@ -174,14 +174,14 @@ export default function PropertyDetails() {
                 {property.type}
               </Text>
             </View>
-            {property.is_sold && (
+            {property.is_featured && (
               <View className='bg-amber-50 px-3 py-1 rounded-full'>
                 <Text className='text-amber-600 text-xs font-semibold'> Featured</Text></View>
             )}
 
             {property.is_sold && (
               <View className='bg-red-50 py-1 rounded-full'>
-                <Text className='text-red-500 text-xs font-semibold'> Soldk</Text>
+                <Text className='text-red-500 text-xs font-semibold'> Sold</Text>
               </View>
             )}
 
